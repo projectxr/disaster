@@ -145,10 +145,13 @@ socketManager.init = (server: http.Server) => {
 			const sirenId = socketToSirenMap.get(socket.id);
 			if (sirenId) {
 				console.log(`Siren ${sirenId} disconnected`);
-
 				// Remove from the map
 				socketToSirenMap.delete(socket.id);
-
+				io.emit('siren-status-change', {
+					sirenId,
+					status: 'inactive',
+					lastChecked: new Date(),
+				});
 				// Update siren status to inactive
 				try {
 					const updatedSiren = await Siren.findOneAndUpdate(
@@ -162,12 +165,6 @@ socketManager.init = (server: http.Server) => {
 
 					if (updatedSiren) {
 						console.log(`Siren ${sirenId} status updated to inactive`);
-						// Notify all clients about the siren status change
-						io.emit('siren-status-change', {
-							sirenId,
-							status: 'inactive',
-							lastChecked: updatedSiren.lastChecked,
-						});
 					}
 				} catch (error) {
 					console.error(`Error updating siren ${sirenId} status:`, error);

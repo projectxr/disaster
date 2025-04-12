@@ -8,6 +8,10 @@ interface DataContextType {
 	loading: boolean;
 	error: string | null;
 	refreshData: () => Promise<void>;
+	updateSiren: (sirenId: string, updates: any) => void;
+	updateDistrict: (districtId: string, updates: Partial<District>) => void;
+	setDistricts: (districts: District[]) => void;
+	setSirens: (sirens: Siren[]) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -33,12 +37,51 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 		}
 	};
 
+	const updateSiren = (sirenId: string, updates: Partial<Siren>) => {
+		setDistricts(prevDistricts =>
+			prevDistricts.map(district => ({
+				...district,
+				blocks: district.blocks.map(block => ({
+					...block,
+					sirens: block.sirens.map(siren =>
+						siren.id === sirenId ? { ...siren, ...updates } : siren
+					),
+				})),
+			}))
+		);
+
+		// Also update the flat sirens array
+		setSirens(prevSirens =>
+			prevSirens.map(siren => (siren.id === sirenId ? { ...siren, ...updates } : siren))
+		);
+	};
+
+	const updateDistrict = (districtId: string, updates: Partial<District>) => {
+		setDistricts(prevDistricts =>
+			prevDistricts.map(district =>
+				district.id === districtId ? { ...district, ...updates } : district
+			)
+		);
+	};
+
 	useEffect(() => {
 		refreshData();
 	}, []);
 
 	return (
-		<DataContext.Provider value={{ districts, sirens, loading, error, refreshData }}>
+		<DataContext.Provider
+			value={{
+				districts,
+				sirens,
+				loading,
+				error,
+				refreshData,
+				updateSiren,
+				updateDistrict,
+				setDistricts,
+				setSirens,
+			}}
+		>
 			{children}
 		</DataContext.Provider>
 	);

@@ -38,13 +38,12 @@ const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, icon }) => {
 				</CardHeader>
 				<CardContent className='text-center'>
 					<p className='text-gray-400 max-w-md mx-auto'>
-						This module is currently under development. It will provide functionality for managing
-						and interacting with the {title.toLowerCase()} aspects of the siren system.
+						Please contact your administrator to activate this module.
 					</p>
 					<div className='mt-4 py-4 px-8 bg-industrial-steel/10 rounded-md inline-block'>
 						<div className='flex items-center gap-4'>
 							<Wrench className='h-6 w-6 text-industrial-yellow' />
-							<span>Coming Soon</span>
+							<span>Requires Admin Approval</span>
 						</div>
 					</div>
 				</CardContent>

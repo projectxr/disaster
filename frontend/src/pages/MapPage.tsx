@@ -1,11 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import MapView from '@/components/mapView/MapView';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { socket } from '@/lib/socket';
 
 const MapPage = () => {
-	const { districts, sirens, loading, error } = useData();
+	const { districts, sirens, loading, error, updateSiren } = useData();
+
+	useEffect(() => {
+		const handleStatusChange = (data: { sirenId: string; status: string; lastChecked: Date }) => {
+			updateSiren(data.sirenId, {
+				status: data.status,
+				lastChecked: data.lastChecked,
+			});
+		};
+
+		socket.on('siren-status-change', handleStatusChange);
+
+		return () => {
+			socket.off('siren-status-change', handleStatusChange);
+		};
+	}, [updateSiren]); // Use updateSiren in dependency array instead of sirens
 
 	if (loading) return <div className='flex items-center justify-center h-screen'>Loading...</div>;
 	if (error)
