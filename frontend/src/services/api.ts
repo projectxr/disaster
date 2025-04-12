@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { District, Siren } from '../types';
-
-const API_BASE_URL = 'http://localhost:5001';
+import { API_BASE_URL } from '@/lib/utils';
 
 // District APIs
 export const getDistricts = async (): Promise<District[]> => {
