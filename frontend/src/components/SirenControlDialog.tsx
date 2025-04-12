@@ -142,7 +142,8 @@ const SirenControlDialog: React.FC<SirenControlDialogProps> = ({ siren, isOpen, 
 		if (messageRef.current?.value) {
 			socket.emit('siren-control', {
 				sirenId: siren.id,
-				action: messageRef.current.value,
+				action: 'on',
+				message: messageRef.current.value,
 				alertType: alarmType,
 				gapAudio: Number(intervalRef.current?.value || 0),
 				language: langRef.current?.value || 'en',
@@ -341,7 +342,7 @@ const SirenControlDialog: React.FC<SirenControlDialogProps> = ({ siren, isOpen, 
 						variant='default'
 						size='sm'
 						onClick={handleSendMessage}
-						disabled={!messageRef.current?.value || isWaitingForAck || currentStatus !== 'active'}
+						disabled={isWaitingForAck || currentStatus !== 'active'}
 						className='gap-2'
 					>
 						<Send className='h-4 w-4' /> Send Message

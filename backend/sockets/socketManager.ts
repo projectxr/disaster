@@ -73,19 +73,26 @@ socketManager.init = (server: http.Server) => {
 		});
 
 		socket.on('siren-control', data => {
-			let { sirenId, action, alertType, gapAudio, language } = data;
+			let { sirenId, action, alertType, gapAudio, message, language } = data;
 			if (!gapAudio) gapAudio = 0;
 			if (!language) language = 'hi';
 			console.log(`Siren ${sirenId} - ${action} - ${alertType} - ${gapAudio} - ${language}`);
-			io.emit(`siren-control-siren`, { sirenId, action, alertType, gapAudio, language });
+			io.emit(`siren-control-siren`, { sirenId, action, alertType, gapAudio, language, message });
 		});
 
 		socket.on('siren-control-multi', data => {
-			let { sirenIds, action, alertType, gapAudio, language } = data;
+			let { sirenIds, action, alertType, gapAudio, message, language } = data;
 			if (!gapAudio) gapAudio = 0;
 			if (!language) language = 'hi';
 			console.log(`Sirens ${sirenIds} - ${action} - ${alertType} - ${gapAudio} - ${language}`);
-			io.emit(`siren-control-multi-siren`, { sirenIds, action, alertType, gapAudio, language });
+			io.emit(`siren-control-multi-siren`, {
+				sirenIds,
+				action,
+				message,
+				alertType,
+				gapAudio,
+				language,
+			});
 		});
 
 		socket.on('siren-ack-on', async data => {
