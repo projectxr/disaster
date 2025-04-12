@@ -6,10 +6,9 @@ import { BellRing, AlertTriangle, AlertCircle, CheckCircle2, WifiOff } from 'luc
 
 interface SirenDashboardProps {
 	sirens: District[];
-	locations: Location[];
 }
 
-const SirenDashboard: React.FC<SirenDashboardProps> = ({ sirens, locations }) => {
+const SirenDashboard: React.FC<SirenDashboardProps> = ({ sirens }) => {
 	// Flatten all sirens to calculate statistics
 	const allSirens = sirens.flatMap(district => district.blocks.flatMap(block => block.sirens));
 
@@ -82,28 +81,38 @@ const SirenDashboard: React.FC<SirenDashboardProps> = ({ sirens, locations }) =>
 				<div className='space-y-4'>
 					<Card className='bg-industrial-dark border-industrial-steel/30'>
 						<CardHeader className='pb-2'>
-							<CardTitle className='text-sm font-medium'>Location Summary</CardTitle>
+							<CardTitle className='text-sm font-medium'>District Summary</CardTitle>
 						</CardHeader>
 						<CardContent className='space-y-2'>
-							{locations.map(location => (
-								<div key={location.id} className='space-y-1'>
-									<div className='flex justify-between items-center'>
-										<span className='font-medium text-sm'>{location.name}</span>
-										<span className='text-xs text-gray-400'>{location.sirenCount} sirens</span>
+							{sirens.map(district => {
+								const districtSirens = district.blocks.flatMap(block => block.sirens);
+								const sirenCount = districtSirens.length;
+								const activeCount = districtSirens.filter(s => s.status === 'active').length;
+								const warningCount = districtSirens.filter(s => s.status === 'warning').length;
+								const alertCount = districtSirens.filter(s => s.status === 'alert').length;
+
+								return (
+									<div key={district.id} className='space-y-1'>
+										<div className='flex justify-between items-center'>
+											<span className='font-medium text-sm'>{district.name}</span>
+											<span className='text-xs text-gray-400'>{sirenCount} sirens</span>
+										</div>
+										<div className='h-2 w-full bg-industrial-steel/30 rounded-full overflow-hidden'>
+											<div
+												className='h-full bg-green-500 rounded-full'
+												style={{
+													width: `${sirenCount > 0 ? (activeCount / sirenCount) * 100 : 0}%`,
+												}}
+											></div>
+										</div>
+										<div className='flex justify-between text-xs text-gray-400'>
+											<span>Active: {activeCount}</span>
+											<span>Warning: {warningCount}</span>
+											<span>Alert: {alertCount}</span>
+										</div>
 									</div>
-									<div className='h-2 w-full bg-industrial-steel/30 rounded-full overflow-hidden'>
-										<div
-											className='h-full bg-green-500 rounded-full'
-											style={{ width: `${(location.activeCount / location.sirenCount) * 100}%` }}
-										></div>
-									</div>
-									<div className='flex justify-between text-xs text-gray-400'>
-										<span>Active: {location.activeCount}</span>
-										<span>Warning: {location.warningCount}</span>
-										<span>Alert: {location.alertCount}</span>
-									</div>
-								</div>
-							))}
+								);
+							})}
 						</CardContent>
 					</Card>
 

@@ -1,7 +1,6 @@
 import { useData } from '../context/DataContext';
 
 import SirenDashboard from '@/components/sirenList/SirenDashboard';
-import { locations } from '@/data/mockData';
 
 const Index = () => {
 	const { districts, sirens, loading, error } = useData();
@@ -27,7 +26,7 @@ const Index = () => {
 
 	return (
 		<div className='p-4 space-y-6'>
-			<SirenDashboard sirens={districts} locations={locations} />
+			<SirenDashboard sirens={districts} />
 		</div>
 	);
 };
