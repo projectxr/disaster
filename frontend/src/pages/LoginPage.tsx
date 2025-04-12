@@ -1,15 +1,14 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { login, loadUser, LoginCredentials } from '../services/auth';
+import { LoginCredentials } from '../services/auth';
+import { useAuth } from '../context/AuthContext';
 
 const LoginPage = () => {
-	const navigate = useNavigate();
+	const { login, isLoading } = useAuth();
 	const [formData, setFormData] = useState<LoginCredentials>({
 		email: '',
 		password: '',
 	});
 	const [error, setError] = useState<string>('');
-	const [loading, setLoading] = useState<boolean>(false);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFormData({
@@ -21,20 +20,12 @@ const LoginPage = () => {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError('');
-		setLoading(true);
 
 		try {
-			const response = await login(formData);
-
-			// Load user data
-			const user = await loadUser();
-			localStorage.setItem('user', JSON.stringify(user));
-
-			navigate('/');
+			await login(formData);
+			// Login successful - redirect is handled in the AuthContext
 		} catch (err) {
 			setError('Invalid credentials. Please try again.');
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -86,10 +77,10 @@ const LoginPage = () => {
 					<div>
 						<button
 							type='submit'
-							disabled={loading}
+							disabled={isLoading}
 							className='w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
 						>
-							{loading ? 'Signing in...' : 'Sign in'}
+							{isLoading ? 'Signing in...' : 'Sign in'}
 						</button>
 					</div>
 				</form>
