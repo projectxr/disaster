@@ -33,7 +33,7 @@ interface SirenControlDialogProps {
 
 const SirenControlDialog: React.FC<SirenControlDialogProps> = ({ siren, isOpen, onOpenChange }) => {
 	// States for form values
-	const [communicationType, setCommunicationType] = useState<string>('GPRS');
+	const [communicationType, setCommunicationType] = useState<string>('cell');
 	const [alarmType, setAlarmType] = useState<string>('warning');
 	const [playing, setPlaying] = useState(false);
 	const [isWaitingForAck, setIsWaitingForAck] = useState(false);
@@ -143,6 +143,7 @@ const SirenControlDialog: React.FC<SirenControlDialogProps> = ({ siren, isOpen, 
 			socket.emit('siren-control', {
 				sirenId: siren.id,
 				action: 'on',
+				connType: communicationType,
 				message: messageRef.current.value,
 				alertType: alarmType,
 				gapAudio: Number(intervalRef.current?.value || 0),
@@ -236,20 +237,20 @@ const SirenControlDialog: React.FC<SirenControlDialogProps> = ({ siren, isOpen, 
 									className='space-y-2'
 								>
 									<div className='flex items-center space-x-2'>
-										<RadioGroupItem value='GPRS' id='communication-gprs' />
-										<Label htmlFor='communication-gprs'>GPRS</Label>
+										<RadioGroupItem value='cell' id='communication-gprs' />
+										<Label htmlFor='communication-gprs'>Cellular (4G/3G/2G)</Label>
 									</div>
 									<div className='flex items-center space-x-2'>
-										<RadioGroupItem value='Ethernet' id='communication-ethernet' />
+										<RadioGroupItem value='eth' id='communication-ethernet' />
 										<Label htmlFor='communication-ethernet'>Ethernet</Label>
 									</div>
 									<div className='flex items-center space-x-2'>
-										<RadioGroupItem value='Cellular (4G)' id='communication-cellular' />
-										<Label htmlFor='communication-cellular'>Cellular (4G)</Label>
+										<RadioGroupItem value='sat' id='communication-vsat' />
+										<Label htmlFor='communication-vsat'>VSAT</Label>
 									</div>
 									<div className='flex items-center space-x-2'>
-										<RadioGroupItem value='VSAT' id='communication-vsat' />
-										<Label htmlFor='communication-vsat'>VSAT</Label>
+										<RadioGroupItem value='any' id='comm-any' />
+										<Label htmlFor='comm-any'>Choose Best</Label>
 									</div>
 								</RadioGroup>
 							</div>
