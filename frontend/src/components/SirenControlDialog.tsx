@@ -130,6 +130,7 @@ const SirenControlDialog: React.FC<SirenControlDialogProps> = ({ siren, isOpen, 
 		socket.emit('siren-control', {
 			sirenId: siren.id,
 			action: newState ? 'on' : 'off',
+			connType: communicationType,
 			alertType: alarmType,
 			gapAudio: Number(intervalRef.current?.value || 0),
 			language: langRef.current?.value || 'en',
