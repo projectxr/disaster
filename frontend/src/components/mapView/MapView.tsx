@@ -4,7 +4,7 @@ import { Siren, MarkerLatLng } from '@/types';
 import SirenStatusBadge from '../sirenList/SirenStatusBadge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, ChevronDown, MapPin, Map } from 'lucide-react';
+import { Search, Filter, ChevronDown, MapPin, Map, Bell, ChevronRight } from 'lucide-react';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -21,6 +21,13 @@ import SirenMarker from './SirenMarker';
 import { DefaultZoomButton } from './MapElements';
 import { GeoJSONLayer } from './GeoJSONLayer';
 import stateData from './states.json';
+import SirenControlDialog from '../SirenControlDialog';
+import {
+	Accordion,
+	AccordionContent,
+	AccordionItem,
+	AccordionTrigger,
+} from '@/components/ui/accordion';
 
 // Make sure to import this CSS for proper map display
 import { useEffect as useEffectOnce } from 'react';
@@ -38,6 +45,9 @@ const MapView: React.FC<MapViewProps> = ({ sirens }) => {
 		'alert',
 		'inactive',
 	]);
+	const [expandedSirenId, setExpandedSirenId] = useState<string | null>(null);
+	const [controlDialogOpen, setControlDialogOpen] = useState(false);
+	const [activeSiren, setActiveSiren] = useState<any>(null);
 
 	const mapSirens = sirens.map(siren => {
 		const status = siren.status;
@@ -50,6 +60,7 @@ const MapView: React.FC<MapViewProps> = ({ sirens }) => {
 		return {
 			...siren,
 			color,
+			playing: (siren as any).playing || false,
 			latitude: siren.latitude || parseFloat(Math.random() * 10 + 15).toFixed(6),
 			longitude: siren.longitude || parseFloat(Math.random() * 15 + 70).toFixed(6),
 		};
@@ -71,9 +82,16 @@ const MapView: React.FC<MapViewProps> = ({ sirens }) => {
 		});
 	};
 
-	const handleMarkerClick = (siren: Siren) => {
+	const handleTestSiren = (siren: any, e: React.MouseEvent) => {
+		e.stopPropagation();
+		setActiveSiren(siren);
+		setControlDialogOpen(true);
+	};
+
+	const handleMarkerClick = (siren: any) => {
 		setSelectedSiren(siren);
 	};
+
 	useEffectOnce(() => {
 		// Fix Leaflet icon issues in production build
 		import('leaflet').then(L => {
@@ -257,17 +275,20 @@ const MapView: React.FC<MapViewProps> = ({ sirens }) => {
 							{filteredSirens.map(siren => (
 								<div
 									key={siren.id}
-									onClick={() => setSelectedSiren(siren)}
-									className={`p-2 rounded-md flex items-center justify-between cursor-pointer transition-colors
+									className={`rounded-md flex flex-col cursor-pointer transition-colors
                               ${
 																selectedSiren?.id === siren.id
 																	? 'bg-industrial-steel/40'
 																	: 'hover:bg-industrial-steel/20'
 															}`}
 								>
-									<div className='flex items-center'>
-										<div
-											className={`h-3 w-3 rounded-full mr-2
+									<div
+										className='p-2 flex items-center justify-between'
+										onClick={() => setSelectedSiren(siren as any)}
+									>
+										<div className='flex items-center'>
+											<div
+												className={`h-3 w-3 rounded-full mr-2
                                     ${
 																			siren.status === 'active'
 																				? 'bg-green-500'
@@ -277,16 +298,52 @@ const MapView: React.FC<MapViewProps> = ({ sirens }) => {
 																				? 'bg-red-500'
 																				: 'bg-gray-500'
 																		}`}
-										></div>
-										<span className='text-sm'>{siren.name}</span>
+											></div>
+											<span className='text-sm'>{siren.name}</span>
+										</div>
+										<div className='flex items-center'>
+											<Button
+												variant='ghost'
+												size='icon'
+												className='h-8 w-8 text-industrial-yellow'
+												onClick={e => handleTestSiren(siren, e)}
+											>
+												<Bell className='h-4 w-4' />
+											</Button>
+											<ChevronRight
+												className={`h-4 w-4 transition-transform ${
+													expandedSirenId === siren.id ? 'rotate-90' : ''
+												}`}
+												onClick={e => {
+													e.stopPropagation();
+													setExpandedSirenId(expandedSirenId === siren.id ? null : siren.id);
+												}}
+											/>
+										</div>
 									</div>
-									<span className='text-xs text-gray-400'>{siren.type.join(', ')}</span>
+									{expandedSirenId === siren.id && (
+										<div className='px-7 pb-2 text-xs text-gray-400'>
+											<div className='flex justify-between border-t border-industrial-steel/20 pt-1 mt-1'>
+												<span>Connection Types:</span>
+												<span>{siren.type.join(', ')}</span>
+											</div>
+										</div>
+									)}
 								</div>
 							))}
 						</div>
 					</CardContent>
 				</Card>
 			</div>
+
+			{/* Add SirenControlDialog */}
+			{activeSiren && (
+				<SirenControlDialog
+					isOpen={controlDialogOpen}
+					onOpenChange={setControlDialogOpen}
+					siren={activeSiren}
+				/>
+			)}
 		</div>
 	);
 };

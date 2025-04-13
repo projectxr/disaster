@@ -86,11 +86,6 @@ const SirenMarker: React.FC<SirenMarkerProps> = ({
 							</div>
 
 							<div className='flex items-center'>
-								<Wifi className={`w-4 h-4 mr-2 ${isOnline ? 'text-green-500' : 'text-red-500'}`} />
-								<span>{isOnline ? 'Online' : 'Offline'}</span>
-							</div>
-
-							<div className='flex items-center'>
 								<AlertCircle
 									className={`w-4 h-4 mr-2 ${playing ? 'text-yellow-500' : 'text-gray-400'}`}
 								/>
@@ -116,12 +111,7 @@ const SirenMarker: React.FC<SirenMarkerProps> = ({
 				</Popup>
 			</Marker>
 
-			<SirenControlDialog
-				siren={siren}
-				isOpen={isDialogOpen}
-				onOpenChange={setIsDialogOpen}
-				sendSignal={sendSignal}
-			/>
+			<SirenControlDialog siren={siren} isOpen={isDialogOpen} onOpenChange={setIsDialogOpen} />
 		</>
 	);
 };

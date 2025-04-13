@@ -157,19 +157,6 @@ const SirenList: React.FC<SirenListProps> = ({ sirens, sendSignal }) => {
 																		>
 																			<Bell className='h-4 w-4' />
 																		</Button>
-																		<Button
-																			variant='ghost'
-																			size='icon'
-																			className='h-8 w-8 text-red-500'
-																			onClick={e => {
-																				e.stopPropagation();
-																				if (sendSignal) {
-																					sendSignal(siren.id, 'switch', false, '', 0, 'en');
-																				}
-																			}}
-																		>
-																			<BellOff className='h-4 w-4' />
-																		</Button>
 																	</div>
 																</TableCell>
 															</TableRow>
