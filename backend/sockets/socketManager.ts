@@ -26,8 +26,8 @@ var socketManager = {
 
 socketManager.init = (server: http.Server) => {
 	io = new Server(server, {
-		pingInterval: 4000,
-		pingTimeout: 8000,
+		pingInterval: 2000,
+		pingTimeout: 3000,
 		cors: {
 			origin: '*',
 			methods: ['GET', 'POST'],
